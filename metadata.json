@@ -1,0 +1,7 @@
+{
+  "uuid": "bluetooth-switch@local",
+  "name": "Bluetooth Switch",
+  "description": "Toggle a Bluetooth audio card between A2DP and Headset profiles via pactl.",
+  "version": 1,
+  "shell-version": ["46"]
+}
