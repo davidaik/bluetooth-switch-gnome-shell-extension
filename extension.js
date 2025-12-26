@@ -259,6 +259,9 @@ class BluetoothProfileIndicator extends PanelMenu.Button {
         if (this._busy)
             return;
 
+        if (this._destroyed)
+            return;
+
         this._busy = true;
         this._switchItem.setSensitive(false);
 
@@ -274,6 +277,9 @@ class BluetoothProfileIndicator extends PanelMenu.Button {
             const targetProfile = enabled ? headset : a2dp;
             const result = await setCardProfile(cardName, targetProfile);
 
+            if (this._destroyed)
+                return;
+
             if (!result.ok) {
                 const details = _trimOrEmpty(result.stderr) || _trimOrEmpty(result.stdout) || 'Unknown error';
                 _notifyError('Bluetooth Switch', details);
@@ -283,11 +289,16 @@ class BluetoothProfileIndicator extends PanelMenu.Button {
             Main.notify(`Bluetooth audio: ${enabled ? 'Headset' : 'A2DP'}`);
         } finally {
             this._busy = false;
+
+            if (this._destroyed)
+                return;
+
             this._switchItem.setSensitive(true);
 
             // Give the audio stack a moment to update "Active Profile" before syncing.
             await delayMs(250);
-            void this._syncState();
+            if (!this._destroyed)
+                void this._syncState();
         }
     }
 });
